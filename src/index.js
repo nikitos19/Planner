@@ -1,6 +1,4 @@
 import './style.css';
-
-console.log({
-  a: '2',
-  b: '3',
-});
+import './crudTasks.js';
+import './searchAndSortItems.js';
+import './itemsStorage.js';

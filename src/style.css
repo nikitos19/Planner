@@ -1,3 +1,238 @@
-div {
-  color: blue;
+html {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.container {
+  display: block;
+  width: 700px;
+  margin: 10px auto 0;
+}
+
+.header {
+  display: flex;
+  overflow: hidden;
+  background-color: rgb(54, 103, 167);
+  padding: 10px;
+}
+
+.header h1 {
+  width: 70%;
+  color: white;
+  font-size: 20px;
+}
+
+.searchIptClass {
+  color: white;
+  margin: 15px;
+  padding: 5px;
+  font-size: 15px;
+  line-height: 15px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  border-bottom: 3px solid white;
+}
+
+.searchIptClass::placeholder {
+  color: white;
+}
+
+.main {
+  padding: 10px;
+  border-left: 2px solid #ddd;
+  border-right: 2px solid #ddd;
+  border-bottom: 2px solid #ddd;
+}
+
+.newTaskDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.newTaskIptClass {
+  margin: 10px 0;
+  width: 70%;
+  font-size: 15px;
+  height: 15px;
+  padding: 12px 10px;
+  border: none;
+  border-bottom: 3px solid #ddd;
+  background: #fff;
+  color: #888;
+  outline: none;
+}
+
+.newTaskBtnClass {
+  background: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 20px;
+  height: 35px;
+  width: 10%;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin: 10px 20px 0;
+  outline: none;
+}
+
+newTaskBtnClass:hover {
+  color: #333;
+}
+
+.sortingDiv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #bbb;
+}
+
+.openItemsSpan,
+.doneItemsSpan {
+  width: 60%;
+  font-size: 20px;
+  color: black;
+}
+
+.openItemsSort,
+.doneItemsSort {
+  width: 25%;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid #333;
+  cursor: pointer;
+}
+
+.openItemsClass {
+  padding: 0 0 10px;
+}
+
+.doneItemsClass {
+  padding: 20px 0 30px;
+}
+
+.clearAllOpenItems,
+.clearAllDoneItems {
+  float: right;
+  padding: 0 70px 0;
+  cursor: pointer;
+  color: #888;
+}
+
+a.clearAllOpenItems,
+a.clearAllDoneItems {
+  text-decoration: none;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.openItems,
+.doneItems {
+  padding: 5px;
+}
+
+.openTask {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0;
+  width: 90%;
+  font-size: 15px;
+  padding: 10px 10px;
+  border: 2px solid #ddd;
+  background: rgba(255, 255, 255, 0.664);
+  border-radius: 6px;
+  color: #888;
+}
+
+.openTask a {
+  display: none;
+}
+
+.openTask:hover a {
+  display: block;
+}
+
+.taskText {
+  width: 75%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.taskDate {
+  font-size: 12px;
+}
+
+a.glyphicon.glyphicon-trash.rmvBtn {
+  text-decoration: none;
+}
+
+.checkboxContainer {
+  display: block;
+  position: relative;
+  padding-left: 5px;
+  padding-top: 5px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.checkboxContainer input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.doneCheckbox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #eee;
+}
+
+.checkboxContainer:hover input ~ .doneCheckbox {
+  background-color: #ccc;
+}
+
+.checkboxContainer input:checked ~ .doneCheckbox {
+  background-color: #2196f3;
+}
+
+.doneCheckbox:after {
+  content: '';
+  position: absolute;
+  display: none;
+}
+
+.checkboxContainer input:checked ~ .doneCheckbox::after {
+  display: block;
+}
+
+.checkboxContainer .doneCheckbox:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }

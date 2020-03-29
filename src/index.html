@@ -1,10 +1,62 @@
 <!DOCTYPE html>
   <head>
-    <title>HTML + JS boilerplate project</title>
+    <title>Planner</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   </head>
   <body>
-    <div>Hello, world</div>
+    <div class="container">
+      
+      <div class="header">
+        <h1>Todo List</h1>
+        <input id="searchIpt" class="searchIptClass" type="text" 
+          placeholder="Search..."/>
+      </div>
+
+      <div class="main">
+        <div class="newTaskDiv">
+          <input id="newTaskIpt" class="newTaskIptClass" type="text" 
+            placeholder="New Task...">
+          <input id="newTaskBtn" class="newTaskBtnClass" type="button" value="ADD">
+        </div>
+
+        <div class="openItemsClass">
+          <div class="sortingDiv">
+            <span class="openItemsSpan">Open Items</span>
+            <label for="openItemsSort">Sort By</label>
+            <select id="openItemsSort" class="openItemsSort">
+              <option value="textAsc">Text(Asc)</option>
+              <option value="textDesc">Text(Desc)</option>
+              <option value="dateAsc">Creation date(Asc)</option>
+              <option value="dateDesc">Creation date(Desc)</option>
+            </select>
+          </div>
+          
+          <ul id="openItems" class="openItems">
+          </ul>
+          <a id="clearAllOpenItems" class="clearAllOpenItems" href="#">Clear "Open" list</a>
+        </div>
+
+        <div class="doneItemsClass">
+          <div class="sortingDiv">
+            <span class="doneItemsSpan">Done Items</span>
+            <label for="doneItemsSort">Sort By</label>
+            <select id="doneItemsSort" class="doneItemsSort">
+              <option value="textAsc">Text(Asc)</option>
+              <option value="textDesc">Text(Desc)</option>
+              <option value="dateAsc">Creation date(Asc)</option>
+              <option value="dateDesc">Creation date(Desc)</option>
+            </select>
+          </div>
+          
+          <ul id="doneItems" class="doneItems">
+          </ul>
+          <a id="clearAllDoneItems" class="clearAllDoneItems" href="#">Clear "Done" list</a>
+        </div>
+      </div>
+    </div>
+
+    </div>
   </body>
 </html>
