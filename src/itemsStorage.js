@@ -1,10 +1,8 @@
 import { createLi } from './crudTasks.js';
 
-document.addEventListener('readystatechange', event => {
-  if (event.target.readyState === 'interactive') {
-    loadAllTaskItems();
-    loadSortingParameters();
-  }
+document.addEventListener('DOMContentLoaded', event => {
+  loadAllTaskItems();
+  loadSortingParameters();
 });
 
 //Load all tasks when page is opened
@@ -13,35 +11,50 @@ function loadAllTaskItems() {
   const doneItems = document.getElementById('doneItems');
 
   const items = JSON.parse(localStorage.getItem('taskItems'));
-  items.forEach(taskItem => {
-    const task = createLi(taskItem);
-    if (taskItem.done) {
-      doneItems.appendChild(task);
-    } else {
-      openItems.appendChild(task);
-    }
-  });
+  items &&
+    items.forEach(taskItem => {
+      const task = createLi(taskItem);
+      if (taskItem.done) {
+        doneItems.appendChild(task);
+      } else {
+        openItems.appendChild(task);
+      }
+    });
 }
 
 //Load sorting value parameters when page is opened
 function loadSortingParameters() {
-  document.getElementById('openItemsSort').value = localStorage.getItem(
-    'openItemsSortBy',
-  );
-  document.getElementById('doneItemsSort').value = localStorage.getItem(
-    'doneItemsSortBy',
-  );
+  const openItemsSortBy = localStorage.getItem('openItemsSortBy');
+  if (openItemsSortBy) {
+    document.getElementById('openItemsSort').value = openItemsSortBy;
+  }
+  const doneItemsSortBy = localStorage.getItem('doneItemsSortBy');
+  if (doneItemsSortBy) {
+    document.getElementById('doneItemsSort').value = doneItemsSortBy;
+  }
 }
 
-export function Item(done, text, date) {
+export function Item(done = false, text, taskDate = null) {
   this.done = done;
   this.text = text;
-  this.date = date;
+  this.taskDate = taskDate;
+}
+
+function TaskDate(
+  creationTime,
+  creationDate,
+  doneTime = null,
+  doneDate = null,
+) {
+  this.creationTime = creationTime;
+  this.creationDate = creationDate;
+  this.doneTime = doneTime;
+  this.doneDate = doneDate;
 }
 
 //Update local storage after add/edit/remove tasks and after sorting tasks
 export function updateStorage() {
-  const items = document.querySelectorAll('ul');
+  const items = document.querySelectorAll('.openItems, .doneItems');
   const taskItems = [];
   for (let i = 0; i < items.length; i++) {
     const nodes = items[i].children;
@@ -49,11 +62,29 @@ export function updateStorage() {
       const li = nodes[j];
       const done = li.querySelector('.chBx').checked;
       const text = li.querySelector('.taskText').textContent;
-      const taskDate = li.querySelector('.taskDate');
-      const date = Array.from(taskDate.childNodes).map(el => el.textContent);
-      const taskItem = new Item(done, text, date);
+      const taskDateDiv = li.querySelector('.taskDate');
+      const taskDate = createTaskDateObj(taskDateDiv);
+      const taskItem = new Item(done, text, taskDate);
       taskItems.push(taskItem);
     }
   }
   localStorage.setItem('taskItems', JSON.stringify(taskItems));
 }
+
+const createTaskDateObj = taskDateDiv => {
+  const creationDateSpan = taskDateDiv.querySelector('.creationDate');
+  const creationDate = creationDateSpan.getAttribute('data-creation-date');
+  const doneDateSpan = taskDateDiv.querySelector('.doneDate');
+
+  if (doneDateSpan) {
+    const doneDate = doneDateSpan.getAttribute('data-done-date');
+    return new TaskDate(
+      creationDateSpan.textContent,
+      creationDate,
+      doneDateSpan.textContent,
+      doneDate,
+    );
+  } else {
+    return new TaskDate(creationDateSpan.textContent, creationDate);
+  }
+};

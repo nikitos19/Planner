@@ -13,14 +13,13 @@ document
 
 //Press Enter when enter the text
 function submitInput(event) {
-  if (event.keyCode === 13) {
-    event.preventDefault();
-    document.getElementById('newTaskBtn').click();
+  if (event.code === 'Enter') {
+    addNewTask();
   }
 }
 
 //ADD button is pressed to add new task
-function addNewTask(event) {
+function addNewTask() {
   const newTaskInput = document.getElementById('newTaskIpt');
   if (newTaskInput.value === '') {
     return;
@@ -37,7 +36,7 @@ function addNewTask(event) {
 }
 
 //Create li element from input or from localStorage when load page
-export const createLi = ({ done = false, text, date = null }) => {
+export const createLi = ({ done, text, taskDate }) => {
   const newLi = document.createElement('li');
   newLi.setAttribute('class', 'openTask');
 
@@ -46,16 +45,17 @@ export const createLi = ({ done = false, text, date = null }) => {
 
   const taskText = document.createElement('div');
   taskText.setAttribute('class', 'taskText');
-  taskText.addEventListener('dblclick', editTask);
+  if (!done) {
+    taskText.addEventListener('dblclick', editTask);
+  }
   taskText.textContent = text;
   newLi.appendChild(taskText);
 
-  const taskDate = createDateDiv(date, done);
-  newLi.appendChild(taskDate);
+  const taskDateDiv = createDateDiv(taskDate, done);
+  newLi.appendChild(taskDateDiv);
 
-  const removeButton = document.createElement('a');
+  const removeButton = document.createElement('button');
   removeButton.setAttribute('class', 'glyphicon glyphicon-trash rmvBtn');
-  removeButton.setAttribute('href', '#');
   removeButton.addEventListener('click', removeTask);
   newLi.appendChild(removeButton);
   return newLi;
@@ -83,50 +83,58 @@ const createDoneCheckbox = done => {
 };
 
 //Creating task date(creation date and done date if exists)
-const createDateDiv = (date, done) => {
-  const taskDate = document.createElement('div');
-  taskDate.setAttribute('class', 'taskDate');
-  if (date != null) {
+const createDateDiv = (taskDate, done) => {
+  const taskDateDiv = document.createElement('div');
+  taskDateDiv.setAttribute('class', 'taskDate');
+  if (taskDate != null) {
     const creationDate = document.createElement('span');
-    creationDate.innerHTML = date[0];
-    taskDate.appendChild(creationDate);
+    creationDate.setAttribute('class', 'creationDate');
+    creationDate.setAttribute('data-creation-date', taskDate.creationDate);
+    creationDate.innerHTML = taskDate.creationTime;
+    taskDateDiv.appendChild(creationDate);
     if (done) {
       const doneDate = document.createElement('span');
-      doneDate.innerHTML = `<br/><b>${date[1]}</b>`;
-      taskDate.appendChild(doneDate);
+      doneDate.setAttribute('class', 'doneDate');
+      doneDate.setAttribute('data-done-date', taskDate.doneDate);
+      doneDate.innerHTML = taskDate.doneTime;
+      taskDateDiv.appendChild(doneDate);
     }
   } else {
     const creationDate = document.createElement('span');
+    creationDate.setAttribute('class', 'creationDate');
+    creationDate.setAttribute('data-creation-date', Date.now());
     creationDate.innerHTML = getCurrentTime();
-    taskDate.appendChild(creationDate);
+    taskDateDiv.appendChild(creationDate);
   }
-  return taskDate;
+  return taskDateDiv;
 };
 
 //Double click on li to change text
 function editTask(event) {
-  const li = event.currentTarget;
+  const li = event.target;
   const valueToEdit = li.textContent;
   const taskInput = document.createElement('input');
   taskInput.setAttribute('type', 'text');
   taskInput.setAttribute('value', valueToEdit);
   taskInput.setAttribute('class', 'newTaskIptClass');
-  taskInput.addEventListener('change', saveChangedTask);
+  taskInput.setAttribute('data-old-value', valueToEdit);
   taskInput.addEventListener('keyup', submitChangedTask);
+  taskInput.addEventListener('blur', saveChangedTask);
   li.replaceWith(taskInput);
   taskInput.focus();
 }
 
 //Save edited task
 function saveChangedTask(event) {
-  const changedInput = event.currentTarget;
-  if (changedInput.value === '') {
-    return;
+  const changedInput = event.target;
+  let editedText = changedInput.value;
+  if (editedText === '') {
+    editedText = changedInput.getAttribute('data-old-value');
   }
   const taskText = document.createElement('div');
   taskText.setAttribute('class', 'taskText');
   taskText.addEventListener('dblclick', editTask);
-  taskText.textContent = changedInput.value;
+  taskText.textContent = editedText;
   changedInput.replaceWith(taskText);
 
   callSortItems(
@@ -137,8 +145,16 @@ function saveChangedTask(event) {
 
 //Pressed Enter or Esc button during editing task
 function submitChangedTask(event) {
-  if (event.keyCode === 13 || event.keyCode === 27) {
-    event.preventDefault();
+  if (event.code === 'Escape') {
+    const input = event.target;
+    const taskText = document.createElement('div');
+    taskText.setAttribute('class', 'taskText');
+    taskText.addEventListener('dblclick', editTask);
+    taskText.textContent = input.getAttribute('data-old-value');
+    input.removeEventListener('blur', saveChangedTask);
+    input.replaceWith(taskText);
+  } else if (event.code === 'Enter') {
+    event.target.removeEventListener('blur', saveChangedTask);
     saveChangedTask(event);
   }
 }
@@ -158,8 +174,7 @@ const getCurrentTime = () => {
 //Remove task
 function removeTask(event) {
   event.preventDefault();
-  const liToBeRemoved = event.currentTarget.parentNode;
-  const taskList = liToBeRemoved.parentNode;
+  const liToBeRemoved = event.target.parentNode;
   liToBeRemoved.remove();
   new Promise(resolve => resolve(updateStorage())).catch(error =>
     console.error(error),
@@ -168,7 +183,7 @@ function removeTask(event) {
 
 //Checkbox is changed
 function checkboxChanged(event) {
-  const currentLiNode = event.currentTarget.parentNode.parentNode;
+  const currentLiNode = event.target.parentNode.parentNode;
   if (this.checked) {
     completeTask(currentLiNode);
   } else {
@@ -184,7 +199,9 @@ function completeTask(taskLi) {
     .removeEventListener('dblclick', editTask);
   const taskDate = liChildren.find(el => el.className === 'taskDate');
   const doneDate = document.createElement('span');
-  doneDate.innerHTML = `<br/><b>${getCurrentTime()}</b>`;
+  doneDate.setAttribute('class', 'doneDate');
+  doneDate.setAttribute('data-done-date', Date.now());
+  doneDate.innerHTML = getCurrentTime();
   taskDate.appendChild(doneDate);
   document.getElementById('doneItems').appendChild(taskLi);
   callSortItems(
@@ -214,14 +231,14 @@ const callSortItems = (list, sortBy) => {
   );
 };
 
-function clearAllOpenItems(event) {
+function clearAllOpenItems() {
   document.getElementById('openItems').innerHTML = '';
   new Promise(resolve => resolve(updateStorage())).catch(error =>
     console.error(error),
   );
 }
 
-function clearAllDoneItems(event) {
+function clearAllDoneItems() {
   document.getElementById('doneItems').innerHTML = '';
   new Promise(resolve => resolve(updateStorage())).catch(error =>
     console.error(error),
